@@ -17,10 +17,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     
     let locationManager = CLLocationManager()
-    var pokemons = [String: Int]()
     var isFirstUserUpdate = true
     var geoFire: GeoFire!
     var geoFireReference: DatabaseReference!
+    var pokemons: [String: Pokemon]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +36,8 @@ class ViewController: UIViewController {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
         // Fire initial functions
-        initializePokemons()
         authorizeStatus()
+        pokemons = PokemonDatabase.shared.getPokemonDictionary()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -53,8 +53,8 @@ class ViewController: UIViewController {
         }
     }
     
-    private func createSightinnPokemon(forLocation location: CLLocation, withName name: String) {
-        geoFire.setLocation(location, forKey: name)
+    private func createSightingPokemon(forLocation location: CLLocation, withName name: String) {
+        geoFire.setLocation(location, forKey: name.capitalized)
     }
     
     private func showSightsOnMap(atLocation location: CLLocation) {
@@ -63,40 +63,24 @@ class ViewController: UIViewController {
         // GeoFireQuery
         _ = query?.observe(.keyEntered, with: { (key, location) in
             guard let key = key, let location = location else {return}
-            guard let id = self.pokemons[key] else {return}
+            // Get pokemon id
+            guard let id = self.pokemons[key.lowercased()]?.id else {return}
             
             let annotation = PokemonAnnotation(id: id, title: key, coordinate: location.coordinate)
             self.mapView.addAnnotation(annotation)
         })
     }
-    
-    
-    
-    private func initializePokemons() {
-        guard let path = Bundle.main.path(forResource: "pokemon", ofType: "csv") else {return}
-
-        do {
-            let csv = try CSV(contentsOfURL: path)
-            let rows = csv.rows
-            
-            for row in rows {
-                let id = Int(row["id"]!)
-                let name = row["identifier"]!.capitalized
-                
-                pokemons[name] = id
-            }
-        } catch let error as NSError {
-            print(error.debugDescription)
-        }
-    }
 
     @IBAction func pokemonBallPressed(_ sender: Any) {
-        let location = CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
-        let names = Array(pokemons.keys)
-        let index = Int(arc4random_uniform(UInt32(names.count)))
-        let randomPokemonName = names[index]
-        
-        createSightinnPokemon(forLocation: location, withName: randomPokemonName)
+        performSegue(withIdentifier: "PokemonVC", sender: self)
+    }
+    
+    // Prepare for segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PokemonVC" {
+            guard let pokemonVC = segue.destination as? PokemonVC else {return}
+            pokemonVC.delegate = self
+        }
     }
 }
 
@@ -174,9 +158,20 @@ extension ViewController: CLLocationManagerDelegate {
             locationManager.startUpdatingLocation()
             mapView.showsUserLocation = true
         }
-            
     }
+}
+
+extension ViewController: PokemonDelegate {
+    
+    // TODO: - save in geoFire the choosed pokemon
+    func insertPokemonOnMap(pokemon: Pokemon) {
+        print("Pokemon Details:")
+        print(pokemon.id)
+        print(pokemon.name)
         
+        let location = CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
+        createSightingPokemon(forLocation: location, withName: pokemon.name)
+    }
 }
 
 
