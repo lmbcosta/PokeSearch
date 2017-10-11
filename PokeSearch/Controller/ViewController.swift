@@ -70,6 +70,12 @@ class ViewController: UIViewController {
             self.mapView.addAnnotation(annotation)
         })
     }
+    
+    @IBAction func centerUserLocationButtonPressed(_ sender: Any) {
+        let coordinate = mapView.userLocation.coordinate
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinate, 500, 500)
+        mapView.setRegion(coordinateRegion, animated: true)
+    }
 
     @IBAction func pokemonBallPressed(_ sender: Any) {
         performSegue(withIdentifier: "PokemonVC", sender: self)
@@ -120,7 +126,7 @@ extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         if isFirstUserUpdate {
             let coordinate = userLocation.coordinate
-            let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinate, 2000, 2000)
+            let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinate, 500, 500)
             mapView.setRegion(coordinateRegion, animated: true)
             isFirstUserUpdate = false
         }

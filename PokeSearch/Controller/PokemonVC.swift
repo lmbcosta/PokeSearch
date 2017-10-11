@@ -15,7 +15,8 @@ protocol PokemonDelegate {
 class PokemonVC: UIViewController {
 
     @IBOutlet private weak var searchBar: UISearchBar!
-    @IBOutlet private weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    
     
     // Variables
     var pokemons: [Pokemon]!

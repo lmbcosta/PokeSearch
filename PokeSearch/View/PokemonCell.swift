@@ -10,8 +10,8 @@ import UIKit
 
 class PokemonCell: UICollectionViewCell {
     
-    @IBOutlet private weak var pokeImage: UIImageView!
-    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet weak var pokeImage: UIImageView!
+    @IBOutlet weak var nameLabel: UILabel!
     
     func setPokeCell(pokemon: Pokemon) {
         nameLabel.text = pokemon.name.capitalized
