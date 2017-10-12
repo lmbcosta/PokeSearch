@@ -32,7 +32,7 @@ class ViewController: UIViewController {
         locationManager.delegate = self
         mapView.delegate = self
         
-        mapView.userTrackingMode = .followWithHeading
+        mapView.userTrackingMode = .follow
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
         // Fire initial functions
@@ -142,7 +142,7 @@ extension ViewController: MKMapViewDelegate {
         if let annotation = view.annotation as? PokemonAnnotation {
             let placeMark = MKPlacemark(coordinate: annotation.coordinate)
             let destination = MKMapItem(placemark: placeMark)
-            destination.name = "Pokemon Sighting"
+            destination.name = annotation.title
             //destination.name = view.annotation.
             let regionDistance: CLLocationDistance = 1000
             let regionSpan = MKCoordinateRegionMakeWithDistance(annotation.coordinate, regionDistance, regionDistance)

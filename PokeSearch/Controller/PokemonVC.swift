@@ -14,9 +14,8 @@ protocol PokemonDelegate {
 
 class PokemonVC: UIViewController {
 
-    @IBOutlet private weak var searchBar: UISearchBar!
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
-    
     
     // Variables
     var pokemons: [Pokemon]!
@@ -26,6 +25,7 @@ class PokemonVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
         
         // Delegates
         searchBar.delegate = self
@@ -45,6 +45,15 @@ class PokemonVC: UIViewController {
     private func getPokeArray() -> [Pokemon] {
         return isInFilterMode ? filteredPokemons : pokemons
     }
+    
+    private func dismissView() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func backButtonPressed(_ sender: Any) {
+        dismissView()
+    }
+    
 }
 
 // Mark: - UISearchDelegate
@@ -95,7 +104,7 @@ extension PokemonVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pokemon = getPokeArray()[indexPath.row]
         delegate?.insertPokemonOnMap(pokemon: pokemon)
-        dismiss(animated: true, completion: nil)
+        dismissView()
     }
     
 }
