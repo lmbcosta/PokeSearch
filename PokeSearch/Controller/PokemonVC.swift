@@ -93,11 +93,9 @@ extension PokemonVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let pokeArray = getPokeArray()
         
-        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PokemonCell", for: indexPath) as? PokemonCell {
-            cell.setPokeCell(pokemon: pokeArray[indexPath.row])
-            return cell
-        }
-        return UICollectionViewCell()
+        let cell = collectionView.dequeueReusableCell(forIndexPath: indexPath) as PokemonCell
+        cell.setPokeCell(pokemon: pokeArray[indexPath.row])
+        return cell
     }
     
     // Delegate
